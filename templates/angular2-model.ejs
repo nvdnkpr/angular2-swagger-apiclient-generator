@@ -1,0 +1,15 @@
+/* tslint:disable */
+<% _.forEach(refs, function(ref){ %>
+import { <%- ref.type %> } from "./<%- ref.type %>"
+<% });%>
+
+
+export class <%- name %> {
+<% _.forEach(properties, function(prop){ %>
+  <%- prop.name %>: <%- prop.typescriptType %><% if(prop.isArray) { %>[]<% }%>;
+<% }); %>
+
+<% _.forEach(refs, function(ref){ %>
+  <%- ref.name %>: <%- ref.typescriptType %><% if(ref.isArray) { %>[]<% }%>;
+<% }); %>
+}

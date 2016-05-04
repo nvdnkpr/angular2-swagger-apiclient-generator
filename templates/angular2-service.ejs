@@ -1,0 +1,128 @@
+/* tslint:disable */
+import { Injectable } from 'angular2/core';
+import { Http, Response, Headers } from 'angular2/http';
+import { <%= definitions.join(', '); %> } from './models';
+import 'rxjs/Rx';
+
+
+@Injectable()
+/**
+* Created with angular2-swagger-client-generator v{{&version}}
+*/
+export class ApiClientService {
+domain:string;
+
+constructor(public http: Http){
+  {{#domain}}
+  this.domain = '{{&.}}';
+  {{/domain}}
+  {{^domain}}
+  {{#swagger.host}}
+  this.domain= '{{&.}}';
+  {{/swagger.host}}
+
+{{/domain}}
+}
+/*
+constructor(public http: Http, options?: any) {
+var domain = (typeof options === 'object') ? options.domain : options;
+this.domain = typeof(domain) === 'string' ? domain : '{{&domain}}';
+
+if(this.domain.length === 0) {
+throw new Error('Domain parameter must be specified as a string.');
+}
+
+{{#isSecure}}
+this.token = (typeof options === 'object') ? (options.token ? options.token : {}) : {};
+{{/isSecure}}
+}
+*/
+
+
+{{#methods}}
+/**
+{{#summaryLines}}
+* {{&.}}
+{{/summaryLines}}
+*
+* @method
+* @name {{&methodName}}
+{{#parameters}}
+{{^isSingleton}}* @param {{=<%   %>=}}{<% &type %>}<%= {{
+}}= %> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
+{{/parameters}}
+*
+*/
+public {{&methodName}}({{#parameters}}{{&camelCaseName}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}) {
+let payload = {};
+let queryParameters = {};
+let headers = new Headers();
+headers.append('Content-Type', 'application/json');
+
+{{#parameters}}
+{{#isQueryParameter}}
+{{#isSingleton}}
+queryParameters['{{&name}}'] = '{{&singleton}}';
+{{/isSingleton}}
+
+{{^isSingleton}}
+{{#isPatternType}}
+Object.keys(parameters).forEach(function(parameterName) {
+if(new RegExp('{{&pattern}}').test(parameterName)){
+queryParameters[parameterName] = parameters[parameterName];
+}
+});
+{{/isPatternType}}
+{{^isPatternType}}
+if(parameters['{{&camelCaseName}}'] !== undefined){
+queryParameters['{{&name}}'] = parameters['{{&camelCaseName}}'];
+}
+{{/isPatternType}}
+{{/isSingleton}}
+{{/isQueryParameter}}
+
+{{#isHeaderParameter}}
+{{#isSingleton}}
+headers.append('{{&name}}', '{{&singleton}}');
+{{/isSingleton}}
+{{^isSingleton}}
+if(parameters['{{&camelCaseName}}'] !== undefined){
+headers.append('{{&name}}', parameters['{{&camelCaseName}}']);
+}
+{{/isSingleton}}
+{{/isHeaderParameter}}
+{{#isBodyParameter}}
+payload['{{&name}}'] = {{&camelCaseName}};
+{{/isBodyParameter}}
+{{#isFormParameter}}
+{{#isSingleton}}
+form['{{&name}}'] = '{{&singleton}}';
+{{/isSingleton}}
+{{^isSingleton}}
+if(parameters['{{&camelCaseName}}'] !== undefined){
+form['{{&name}}'] = parameters['{{&camelCaseName}}'];
+}
+{{/isSingleton}}
+{{/isFormParameter}}
+{{/parameters}}
+let uri = `{{&path}}`;
+
+return this.http
+.{{angular2httpMethod}}(this.domain + uri{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}, { headers: headers, params: queryParameters })
+.map((res: Response) => {
+{{#hasJsonResponse}}
+let result = res.json();
+{{/hasJsonResponse}}
+{{^hasJsonResponse}}
+let result = null;
+
+// TODO: this method does not return JSON response, so you need to handle response by your own
+{{/hasJsonResponse}}
+
+return res;
+});
+}
+
+{{/methods}}
+
+}

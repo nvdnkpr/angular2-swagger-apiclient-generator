@@ -13,12 +13,23 @@ export class ApiClientService {
 	domain:string;
   
   constructor(public http: Http){
-    {{#swagger.x-dev-host}}
+    {{#domain}}
     this.domain = '{{&.}}';
+    {{/domain}}
+    {{^domain}}
+    {{#swagger.host}}
+    this.domain= '{{&.}}';
+    {{/swagger.host}}
+    {{^swagger.host}}
+    {{#swagger.x-dev-host}}
+    this.domain= '{{&.}}';
     {{/swagger.x-dev-host}}
     {{^swagger.x-dev-host}}
-    this.domain = '';
+    this.domain= '';
     {{/swagger.x-dev-host}}
+    {{/swagger.host}}
+    
+    {{/domain}}
   }
   /*
 	constructor(public http: Http, options?: any) {
@@ -101,7 +112,7 @@ export class ApiClientService {
 			  {{/isSingleton}}
 			{{/isFormParameter}}
 {{/parameters}}		
-		let uri = `{{#swagger.basePath}}{{&.}}{{/swagger.basePath}}{{&path}}`;
+		let uri = `{{&path}}`;
 	  
 		return this.http
 			.{{angular2httpMethod}}(this.domain + uri{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}, { headers: headers, params: queryParameters })
@@ -115,7 +126,7 @@ export class ApiClientService {
 			   // TODO: this method does not return JSON response, so you need to handle response by your own
 			   {{/hasJsonResponse}}
 			   
-         return result;
+         return res;
       });
 	}
 	

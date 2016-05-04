@@ -10,19 +10,19 @@ var Generator = (function () {
 
     function Generator(swaggerfile, outputpath) {
         this._swaggerfile = swaggerfile;
-        this._outputPath = outputpath;
+        this.outputPath = outputpath;
     }
 
     Generator.prototype.Debug = false;
 
     Generator.prototype.initialize = function () {
-        this.LogMessage('Reading Swagger file', this._swaggerfile);
+        this.logMessage('Reading Swagger file', this._swaggerfile);
         var swaggerfilecontent = fs.readFileSync(this._swaggerfile, 'UTF-8');
 
-        this.LogMessage('Parsing Swagger JSON');
+        this.logMessage('Parsing Swagger JSON');
         this.swaggerParsed = JSON.parse(swaggerfilecontent);
 
-        this.LogMessage('Reading Mustache templates');
+        this.logMessage('Reading Mustache templates');
 
         this.templates = {
             'class': fs.readFileSync(__dirname + "/../templates/angular2-service.mustache", 'utf-8'),
@@ -30,8 +30,8 @@ var Generator = (function () {
             'models_export': fs.readFileSync(__dirname + "/../templates/angular2-models-export.mustache", 'utf-8')
         };
 
-        this.LogMessage('Creating Mustache viewModel');
-        this.viewModel = this.createMustacheViewModel();
+        this.logMessage('Creating Mustache viewModel');
+        this.viewModel = this.createViewModel();
 
         this.initialized = true;
     }
@@ -44,7 +44,7 @@ var Generator = (function () {
         this.generateModels();
         this.generateCommonModelsExportDefinition();
 
-        this.LogMessage('API client generated successfully');
+        this.logMessage('API client generated successfully');
     };
 
     Generator.prototype.generateClient = function () {
@@ -52,11 +52,11 @@ var Generator = (function () {
             this.initialize();
 
         // generate main API client class
-        this.LogMessage('Rendering template for API');
+        this.logMessage('Rendering template for API');
         var result = this.renderLintAndBeautify(this.templates.class, this.viewModel, this.templates);
 
-        var outfile = this._outputPath + "/" + "client.ts";
-        this.LogMessage('Creating output file', outfile);
+        var outfile = this.outputPath + "/" + "client.ts";
+        this.logMessage('Creating output file', outfile);
         fs.writeFileSync(outfile, result, 'utf-8')
     };
 
@@ -66,19 +66,19 @@ var Generator = (function () {
         if (this.initialized !== true)
             this.initialize();
 
-        var outputdir = this._outputPath + '/models';
+        var outputdir = this.outputPath + '/models';
 
         if (!fs.existsSync(outputdir))
             fs.mkdirSync(outputdir);
 			
         // generate API models				
         _.forEach(this.viewModel.definitions, function (definition, defName) {
-            that.LogMessage('Rendering template for model: ', definition.name);
+            that.logMessage('Rendering template for model: ', definition.name);
             var result = that.renderLintAndBeautify(that.templates.model, definition, that.templates);
 
             var outfile = outputdir + "/" + definition.name + ".ts";
 
-            that.LogMessage('Creating output file', outfile);
+            that.logMessage('Creating output file', outfile);
             fs.writeFileSync(outfile, result, 'utf-8')
         });
     };
@@ -87,17 +87,17 @@ var Generator = (function () {
         if (this.initialized !== true)
             this.initialize();
 
-        var outputdir = this._outputPath;
+        var outputdir = this.outputPath;
 
         if (!fs.existsSync(outputdir))
             fs.mkdirSync(outputdir);
 
-        this.LogMessage('Rendering common models export');
+        this.logMessage('Rendering common models export');
         var result = this.renderLintAndBeautify(this.templates.models_export, this.viewModel, this.templates);
 
         var outfile = outputdir + "/models.ts";
 
-        this.LogMessage('Creating output file', outfile);
+        this.logMessage('Creating output file', outfile);
         fs.writeFileSync(outfile, result, 'utf-8')
     };
 
@@ -121,24 +121,24 @@ var Generator = (function () {
         return result;
     }
 
-    Generator.prototype.createMustacheViewModel = function () {
+    Generator.prototype.createViewModel = function () {
         var that = this;
         var swagger = this.swaggerParsed;
-        var authorizedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
-        var CLASS_NAME = "TEST_CLASS_NAME";
-        var MODULE_NAME = "TEST_MODULE";
+
+        var domain = (swagger.schemes && swagger.schemes.length > 0 && swagger.host && swagger.basePath) ? swagger.schemes[0] + '://' + swagger.host + swagger.basePath : null;
+        domain = (!domain && swagger.host) ? swagger.host : '';
+
         var data = {
             isNode: false,
             description: swagger.info.description,
             isSecure: swagger.securityDefinitions !== undefined,
             swagger: swagger,
-            moduleName: MODULE_NAME,
-            className: CLASS_NAME,
-            domain: (swagger.schemes && swagger.schemes.length > 0 && swagger.host && swagger.basePath) ? swagger.schemes[0] + '://' + swagger.host + swagger.basePath : '',
+            domain: domain,
             methods: [],
             definitions: []
         };
 
+        var authorizedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
         _.forEach(swagger.paths, function (api, path) {
             var globalParams = [];
 
@@ -331,7 +331,7 @@ var Generator = (function () {
         return tokens.join('');
     }
 
-    Generator.prototype.LogMessage = function (text, param) {
+    Generator.prototype.logMessage = function (text, param) {
         if (this.Debug)
             console.log(text, param || '');
     }
