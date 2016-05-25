@@ -138,7 +138,7 @@ var Generator = (function () {
         // Simple function to camelize poorly written operationId's.
         var camelize = function (string) { 
             string = string.replace (/(?:^|(\W|_)+)(\w)/g, function (match, p1, p2) {
-                return c ? c.toUpperCase () : '';
+                return p2 ? p2.toUpperCase () : '';
             });
 
             return string.charAt(0).toLowerCase() + string.slice(1);
