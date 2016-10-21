@@ -1,6 +1,6 @@
 {
   "name": "flyacts-angular2-swagger-client-generator",
-  "version": "0.0.30",
+  "version": "0.0.32",
   "description": "Angular 2 API client generator from swagger json from Navid Nikpour (https://github.com/nvdnkpr/angular2-swagger-client-generator)",
   "homepage": "https://github.com/flyacts/angular2-swagger-client-generator",
   "main": "index.js",
@@ -31,7 +31,8 @@
   "license": "APACHE",
   "scripts": {
     "a2apigen": "a2apigen -s swagger.json",
-    "build": "gulp"
+    "build": "gulp",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "gulp": "^3.9.1",
