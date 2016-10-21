@@ -2,8 +2,8 @@
 
 var fs = require('fs');
 var Mustache = require('mustache');
-//var beautify = require('js-beautify').js_beautify;
-//var Linter = require('tslint');
+// var beautify = require('js-beautify').js_beautify;
+// var Linter = require('tslint');
 var _ = require('lodash');
 
 var Generator = (function () {
@@ -70,8 +70,8 @@ var Generator = (function () {
 
         if (!fs.existsSync(outputdir))
             fs.mkdirSync(outputdir);
-			
-        // generate API models				
+
+        // generate API models
         _.forEach(this.viewModel.definitions, function (definition, defName) {
             that.LogMessage('Rendering template for model: ', definition.name);
             var result = that.renderLintAndBeautify(that.templates.model, definition, that.templates);
@@ -116,8 +116,8 @@ var Generator = (function () {
 
         // Beautify *****
         // NOTE: this has been commented because of curly braces were added on newline after beaufity
-        //result = beautify(result, { indent_size: 4, max_preserve_newlines: 2 });
-        
+        // result = beautify(result, { indent_size: 4, max_preserve_newlines: 2 });
+
         return result;
     }
 
@@ -135,6 +135,15 @@ var Generator = (function () {
             definitions: []
         };
 
+        // Simple function to camelize poorly written operationId's.
+        var camelize = function (string) {
+            string = string.replace (/(?:^|(\W|_)+)(\w)|(?:\W+$)/g, function (match, p1, p2) {
+                return p2 ? p2.toUpperCase () : '';
+            });
+
+            return string.charAt(0).toLowerCase() + string.slice(1);
+        };
+
         _.forEach(swagger.paths, function (api, path) {
             var globalParams = [];
 
@@ -148,24 +157,24 @@ var Generator = (function () {
                 if (authorizedMethods.indexOf(m.toUpperCase()) === -1){
                     return;
                 }
-                
+
                 // The description line is optional in the spec
                 var summaryLines = [];
                 if (op.description) {
                     summaryLines = op.description.split('\n');
                     summaryLines.splice(summaryLines.length-1, 1);
                 }
-                
-                
-                
+
+
+
                 var method = {
                     path: path,
                     backTickPath: path.replace(/(\{.*?\})/g, "$$$1"),
-                    methodName: op['x-swagger-js-method-name'] ? op['x-swagger-js-method-name'] : (op.operationId ? op.operationId : that.getPathToMethodName(m, path)),
+                    methodName: op['x-swagger-js-method-name'] ? op['x-swagger-js-method-name'] : (op.operationId ? camelize(op.operationId) : that.getPathToMethodName(m, path)),
                     method: m.toUpperCase(),
                     angular2httpMethod: m.toLowerCase(),
                     isGET: m.toUpperCase() === 'GET',
-                    hasPayload: !_.includes(['GET','DELETE','HEAD'], m.toUpperCase()), 
+                    hasPayload: !_.includes(['GET','DELETE','HEAD'], m.toUpperCase()),
                     summaryLines: summaryLines,
                     isSecure: swagger.security !== undefined || op.security !== undefined,
                     parameters: [],
@@ -181,22 +190,48 @@ var Generator = (function () {
 
                 params = params.concat(globalParams);
 
+                // remove formData endpoints since there implementation is broken and we won't need them
+                var i,
+                    formData;
+
+                for (i = 0; i < params.length; i += 1) {
+                    if (params[i].in === 'formData') {
+                        formData = true;
+                        break;
+                    }
+                }
+
+                if (formData === true) {
+                    return;
+                }
+
+                // set hasPayload to false if no params provided
+                if (params.length === 0) {
+                    method.hasPayload = false;
+                }
+
                 _.forEach(params, function (parameter) {
                     // Ignore headers which are injected by proxies & app servers
                     // eg: https://cloud.google.com/appengine/docs/go/requests#Go_Request_headers
-					
+
                     if (parameter['x-proxy-header'] && !data.isNode)
                         return;
 
                     if (_.has(parameter, 'schema') && _.isString(parameter.schema.$ref))
                         parameter.type = that.camelCase(that.getRefType(parameter.schema.$ref));
+                    else if (_.has(parameter, 'schema') && _.isString(parameter.schema.type))
+                        parameter.type = parameter.schema.type;
+
 
                     parameter.camelCaseName = that.camelCase(parameter.name);
 
-                    if (parameter.type === 'integer' || parameter.type === 'double')
+                    if (parameter.type === 'integer' || parameter.type === 'double') {
                         parameter.typescriptType = 'number';
-                    else
+                    } else if (parameter.type === 'object') {
+                        parameter.typescriptType = 'Object';
+                    } else {
                         parameter.typescriptType = parameter.type;
+                    }
 
 
                     if (parameter.enum && parameter.enum.length === 1) {
@@ -257,10 +292,13 @@ var Generator = (function () {
                 else
                     property.type = _.has(propin, '$ref') ? that.camelCase(propin["$ref"].replace("#/definitions/", "")) : propin.type;
 
-                if (property.type === 'integer' || property.type === 'double')
+                if (property.type === 'integer' || property.type === 'double') {
                     property.typescriptType = 'number';
-                else
+                } else if (property.type === 'object') {
+                    property.typescriptType = 'Object';
+                } else {
                     property.typescriptType = property.type;
+                }
 
 
                 if (property.isRef)
