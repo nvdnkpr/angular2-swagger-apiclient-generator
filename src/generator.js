@@ -61,7 +61,9 @@ var Generator = (function () {
     };
 
     Generator.prototype.generateModels = function () {
-        var that = this;
+        var that = this,
+            swaggerDefinitions = this.swaggerParsed.definitions,
+            i;
 
         if (this.initialized !== true)
             this.initialize();
@@ -72,8 +74,46 @@ var Generator = (function () {
             fs.mkdirSync(outputdir);
 
         // generate API models
-        _.forEach(this.viewModel.definitions, function (definition, defName) {
+        _.forEach(swaggerDefinitions, function (definition, defName) {
+            var i,
+                propertyArray = [];
+
+            definition.name = that.camelCase(defName);
+
             that.LogMessage('Rendering template for model: ', definition.name);
+
+            for (var key in definition.properties) {
+                if (definition.properties.hasOwnProperty(key)) {
+                    var parameter = definition.properties[key];
+                    parameter.name = key;
+
+                    // add required info to property
+                    if (definition.required.indexOf(key) > -1) {
+                        parameter.required = true;
+                    } else {
+                        parameter.required = false;
+                    }
+
+                    // array check
+                    if (parameter.type === 'array') {
+                        parameter.isArray = true;
+                    }
+
+                    // add typescript type
+                    if (parameter.type === 'integer' || parameter.type === 'double') {
+                        parameter.typescriptType = 'number';
+                    } else if (parameter.type === 'object') {
+                        parameter.typescriptType = 'Object';
+                    } else {
+                        parameter.typescriptType = parameter.type;
+                    }
+
+                    propertyArray.push(definition.properties[key]);
+                }
+            }
+
+            definition.propertyArray = propertyArray;
+
             var result = that.renderLintAndBeautify(that.templates.model, definition, that.templates);
 
             var outfile = outputdir + "/" + definition.name + ".ts";

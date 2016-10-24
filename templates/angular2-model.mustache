@@ -3,21 +3,20 @@ import { {{type}} } from "./{{type}}"
 {{/refs}}
 
 export class {{&name}} {
-{{#properties}}
+{{#propertyArray}}
 	{{#isArray}}
-        {{name}}: {{typescriptType}}[];
+    {{name}}{{^required}}?{{/required}}: {{typescriptType}}[];
 	{{/isArray}}
 	{{^isArray}}
-        {{name}}: {{typescriptType}};
+    {{name}}{{^required}}?{{/required}}: {{typescriptType}};
 	{{/isArray}}
-{{/properties}}
-
+{{/propertyArray}}
 {{#refs}}
 	{{#isArray}}
-        {{name}}: {{typescriptType}}[];
+    {{name}}: {{typescriptType}}[];
 	{{/isArray}}
 	{{^isArray}}
-        {{name}}: {{typescriptType}};
+    {{name}}: {{typescriptType}};
 	{{/isArray}}
 {{/refs}}
 }

@@ -1,6 +1,6 @@
 {
   "name": "flyacts-angular2-swagger-client-generator",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "description": "Angular 2 API client generator from swagger json from Navid Nikpour (https://github.com/nvdnkpr/angular2-swagger-client-generator)",
   "homepage": "https://github.com/flyacts/angular2-swagger-client-generator",
   "main": "index.js",
