@@ -5,18 +5,18 @@ import { {{type}} } from "./{{type}}"
 export class {{&name}} {
 {{#propertyArray}}
 	{{#isArray}}
-    {{name}}{{^required}}?{{/required}}: {{typescriptType}}[];
+    public {{name}}{{^required}}?{{/required}}: {{typescriptType}}<any>;
 	{{/isArray}}
 	{{^isArray}}
-    {{name}}{{^required}}?{{/required}}: {{typescriptType}};
+    public {{name}}{{^required}}?{{/required}}: {{typescriptType}};
 	{{/isArray}}
 {{/propertyArray}}
 {{#refs}}
 	{{#isArray}}
-    {{name}}: {{typescriptType}}[];
+    public {{name}}: {{typescriptType}}<any>;
 	{{/isArray}}
 	{{^isArray}}
-    {{name}}: {{typescriptType}};
+    public {{name}}: {{typescriptType}};
 	{{/isArray}}
 {{/refs}}
 }

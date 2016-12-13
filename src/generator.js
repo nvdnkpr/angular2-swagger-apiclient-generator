@@ -88,7 +88,7 @@ var Generator = (function () {
                     parameter.name = key;
 
                     // add required info to property
-                    if (definition.required.indexOf(key) > -1) {
+                    if (definition.required && definition.required.indexOf(key) > -1) {
                         parameter.required = true;
                     } else {
                         parameter.required = false;
@@ -104,6 +104,10 @@ var Generator = (function () {
                         parameter.typescriptType = 'number';
                     } else if (parameter.type === 'object') {
                         parameter.typescriptType = 'Object';
+                    } else if (parameter.type === 'array') {
+                        parameter.typescriptType = 'Array';
+                    } else if (!parameter.type || parameter.type === '') {
+                        parameter.typescriptType = 'any';
                     } else {
                         parameter.typescriptType = parameter.type;
                     }
@@ -267,8 +271,16 @@ var Generator = (function () {
 
                     if (parameter.type === 'integer' || parameter.type === 'double') {
                         parameter.typescriptType = 'number';
+                        parameter.convertToString = true;
+                    } else if (parameter.type === 'boolean') {
+                        parameter.typescriptType = parameter.type;
+                        parameter.convertToString = true;
                     } else if (parameter.type === 'object') {
                         parameter.typescriptType = 'Object';
+                    } else if (parameter.type === 'array') {
+                        parameter.typescriptType = 'Array';
+                    } else if (!parameter.type || parameter.type === '') {
+                        parameter.typescriptType = 'any';
                     } else {
                         parameter.typescriptType = parameter.type;
                     }
@@ -336,6 +348,10 @@ var Generator = (function () {
                     property.typescriptType = 'number';
                 } else if (property.type === 'object') {
                     property.typescriptType = 'Object';
+                } else if (property.type === 'array') {
+                    property.typescriptType = 'Array';
+                } else if (!property.type || property.type === '') {
+                    property.typescriptType = 'any';
                 } else {
                     property.typescriptType = property.type;
                 }

@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
-import { {{#definitions}}{{name}}{{^last}}, {{/last}}{{/definitions}} } from './models';
+import {
+    {{#definitions}}
+    {{name}}{{^last}}, {{/last}}
+    {{/definitions}}
+} from './models';
 import 'rxjs/Rx';
 import {Observable} from 'rxjs/Observable';
 
@@ -22,20 +26,19 @@ export class ApiClientService {
     }
 
 {{#methods}}
-	/**
-	{{#summaryLines}}
-    * {{&.}}
-    {{/summaryLines}}
-    *
-	* @method
-	* @name {{&methodName}}
-	{{#parameters}}
-	{{^isSingleton}}* @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
-	{{/parameters}}
-	*
-	*/
+    /**
+     {{#summaryLines}}
+     * {{&.}}
+     {{/summaryLines}}
+     *
+     * @method
+     * @name {{&methodName}}
+     {{#parameters}}
+     {{^isSingleton}}* @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
+     {{/parameters}}
+     *
+     */
     public {{&methodName}}({{#parameters}}{{&camelCaseName}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}) {
-        let payload = {};
         let queryParameters = new URLSearchParams();
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
@@ -55,7 +58,7 @@ export class ApiClientService {
           {{/isPatternType}}
 			    {{^isPatternType}}
         if ({{&camelCaseName}} !== undefined) {
-            queryParameters.set('{{&name}}', {{&camelCaseName}});
+            queryParameters.set('{{&name}}', {{#convertToString}}String({{/convertToString}}{{&camelCaseName}}{{#convertToString}}){{/convertToString}});
         }
           {{/isPatternType}}
         {{/isSingleton}}
@@ -71,9 +74,6 @@ export class ApiClientService {
         }
         {{/isSingleton}}
 			{{/isHeaderParameter}}
-			{{#isBodyParameter}}
-        payload['{{&name}}'] = {{&camelCaseName}};
-			{{/isBodyParameter}}
 			{{#isFormParameter}}
 			  {{#isSingleton}}
         form['{{&name}}'] = '{{&singleton}}';
@@ -90,8 +90,8 @@ export class ApiClientService {
         return this.http
             .{{angular2httpMethod}}(this.domain + uri{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}, { headers: headers, search: queryParameters })
             .map((res: Response) => {
-            return res;
-        });
+                return res;
+            });
     }
 
 {{/methods}}
