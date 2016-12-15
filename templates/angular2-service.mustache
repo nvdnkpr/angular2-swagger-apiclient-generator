@@ -2,19 +2,19 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import {
     {{#definitions}}
-    {{name}}{{^last}}, {{/last}}
+    {{name}}{{^last}},{{/last}}
     {{/definitions}}
 } from './models';
 import 'rxjs/Rx';
-import {Observable} from 'rxjs/Observable';
-
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 /**
  * Created with angular2-swagger-client-generator v{{&version}}
  */
 export class ApiClientService {
-    domain: string;
+    private domain: string;
+    private token: string = null;
 
     constructor(public http: Http) {
     {{#domain}}
@@ -25,24 +25,35 @@ export class ApiClientService {
     {{/domain}}
     }
 
+    /**
+     * set access token
+     * @param  {string} token access token
+     */
+    public setToken(token: string): void {
+        this.token = token;
+    }
+
 {{#methods}}
     /**
      {{#summaryLines}}
      * {{&.}}
      {{/summaryLines}}
-     *
      * @method
      * @name {{&methodName}}
      {{#parameters}}
      {{^isSingleton}}* @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
      {{/parameters}}
-     *
+     * @return {Observable<any>}
      */
-    public {{&methodName}}({{#parameters}}{{&camelCaseName}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}) {
-        let queryParameters = new URLSearchParams();
-        let headers = new Headers();
+    public {{&methodName}}({{#parameters}}{{&camelCaseName}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}): Observable<any> {
+        let queryParameters: any = new URLSearchParams();
+        let headers: any = new Headers();
         headers.append('Content-Type', 'application/json');
 
+        // append auth token if set
+        if (this.token !== null) {
+            headers.append('Authorization', this.token);
+        }
 {{#parameters}}
 			{{#isQueryParameter}}
 			  {{#isSingleton}}
@@ -63,7 +74,6 @@ export class ApiClientService {
           {{/isPatternType}}
         {{/isSingleton}}
 			{{/isQueryParameter}}
-
 			{{#isHeaderParameter}}
 			  {{#isSingleton}}
         headers.append('{{&name}}', '{{&singleton}}');
@@ -85,7 +95,7 @@ export class ApiClientService {
 			  {{/isSingleton}}
 			{{/isFormParameter}}
 {{/parameters}}
-        let uri = `{{&backTickPath}}`;
+        let uri: string = `{{&backTickPath}}`;
 
         return this.http
             .{{angular2httpMethod}}(this.domain + uri{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}, { headers: headers, search: queryParameters })
@@ -93,7 +103,5 @@ export class ApiClientService {
                 return res;
             });
     }
-
 {{/methods}}
-
 }
