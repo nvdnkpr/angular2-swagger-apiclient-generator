@@ -13,7 +13,7 @@ import { Observable } from 'rxjs/Observable';
  * Created with angular2-swagger-client-generator v{{&version}}
  */
 export class ApiClientService {
-    private domain: string;
+    public domain: string;
     private token: string = null;
 
     constructor(public http: Http) {
@@ -34,6 +34,7 @@ export class ApiClientService {
     }
 
 {{#methods}}
+
     /**
      {{#summaryLines}}
      * {{&.}}
@@ -56,44 +57,44 @@ export class ApiClientService {
         }
 {{#parameters}}
 			{{#isQueryParameter}}
-			  {{#isSingleton}}
+                {{#isSingleton}}
         queryParameters.set('{{&name}}', {{&singleton}});
-        {{/isSingleton}}
-			  {{^isSingleton}}
-			    {{#isPatternType}}
+                {{/isSingleton}}
+			    {{^isSingleton}}
+			        {{#isPatternType}}
         Object.keys(parameters).forEach(function(parameterName) {
             if (new RegExp('{{&pattern}}').test(parameterName)) {
                 queryParameters.set(parameterName, parameters[parameterName]);
             }
         });
-          {{/isPatternType}}
-			    {{^isPatternType}}
+                    {{/isPatternType}}
+			        {{^isPatternType}}
         if ({{&camelCaseName}} !== undefined) {
-            queryParameters.set('{{&name}}', {{#convertToString}}String({{/convertToString}}{{&camelCaseName}}{{#convertToString}}){{/convertToString}});
+            queryParameters.set('{{&name}}', {{&camelCaseName}});
         }
-          {{/isPatternType}}
-        {{/isSingleton}}
-			{{/isQueryParameter}}
+                    {{/isPatternType}}
+                {{/isSingleton}}
+            {{/isQueryParameter}}
 			{{#isHeaderParameter}}
-			  {{#isSingleton}}
+                {{#isSingleton}}
         headers.append('{{&name}}', '{{&singleton}}');
-        {{/isSingleton}}
-        {{^isSingleton}}
+                {{/isSingleton}}
+                {{^isSingleton}}
         if ({{&camelCaseName}} !== undefined) {
             headers.append('{{&name}}', {{&camelCaseName}});
         }
-        {{/isSingleton}}
-			{{/isHeaderParameter}}
-			{{#isFormParameter}}
-			  {{#isSingleton}}
+                {{/isSingleton}}
+            {{/isHeaderParameter}}
+            {{#isFormParameter}}
+                {{#isSingleton}}
         form['{{&name}}'] = '{{&singleton}}';
-        {{/isSingleton}}
-        {{^isSingleton}}
+                {{/isSingleton}}
+                {{^isSingleton}}
         if ({{&camelCaseName}} !== undefined) {
             form['{{&name}}'] = {{&camelCaseName}};
         }
-			  {{/isSingleton}}
-			{{/isFormParameter}}
+                {{/isSingleton}}
+            {{/isFormParameter}}
 {{/parameters}}
         let uri: string = `{{&backTickPath}}`;
 
