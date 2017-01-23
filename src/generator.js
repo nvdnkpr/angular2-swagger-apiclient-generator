@@ -219,6 +219,7 @@ var Generator = (function () {
                     angular2httpMethod: m.toLowerCase(),
                     isGET: m.toUpperCase() === 'GET',
                     hasPayload: !_.includes(['GET','DELETE','HEAD'], m.toUpperCase()),
+                    hasEmptyPayload: false,
                     summaryLines: summaryLines,
                     isSecure: swagger.security !== undefined || op.security !== undefined,
                     parameters: [],
@@ -252,6 +253,8 @@ var Generator = (function () {
                 // set hasPayload to false if no params provided
                 if (params.length === 0) {
                     method.hasPayload = false;
+                    // include empty payload
+                    method.hasEmptyPayload = true;
                 }
 
                 _.forEach(params, function (parameter) {
