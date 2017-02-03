@@ -27,11 +27,19 @@ export class ApiClientService {
 
     /**
      * set access token
-     * @param  {string} token access token
+     * @param {string} token access token
      */
     public setToken(token: string): void {
         this.token = token;
     }
+
+    /**
+     * get access token
+     * return {string} access token
+     */
+    public getToken(): string {
+        return this.token;
+    }    
 
 {{#methods}}
 
