@@ -8,9 +8,12 @@ var _ = require('lodash');
 
 var Generator = (function () {
 
-    function Generator(swaggerfile, outputpath) {
+    function Generator(swaggerfile, outputpath, className, generate, modelInterfaces) {
+        this._className = className;
         this._swaggerfile = swaggerfile;
         this._outputPath = outputpath;
+        this._generate = generate;
+        this._modelInterfaces = modelInterfaces;
     }
 
     Generator.prototype.Debug = false;
@@ -25,6 +28,7 @@ var Generator = (function () {
         this.LogMessage('Reading Mustache templates');
 
         this.templates = {
+            'interface': fs.readFileSync(__dirname + "/../templates/angular2-service.interface.mustache", 'utf-8'),
             'class': fs.readFileSync(__dirname + "/../templates/angular2-service.mustache", 'utf-8'),
             'model': fs.readFileSync(__dirname + "/../templates/angular2-model.mustache", 'utf-8'),
             'models_export': fs.readFileSync(__dirname + "/../templates/angular2-models-export.mustache", 'utf-8')
@@ -40,11 +44,43 @@ var Generator = (function () {
         if (this.initialized !== true)
             this.initialize();
 
-        this.generateClient();
-        this.generateModels();
-        this.generateCommonModelsExportDefinition();
+        for (var i = 0; i < this._generate.length; i++) {
+            var param = this._generate[i];
+            this.LogMessage("Generate file: " + param);
 
+            if (param == 'F') {
+                this.LogMessage("Generating full package.");                        
+                this.generateInterface();
+                this.generateClient();
+                this.generateModels();
+                this.generateCommonModelsExportDefinition();
+            }
+            else if (param == 'M') {
+                this.generateModels();
+                this.generateCommonModelsExportDefinition();
+            }
+            else if (param == 'I') {
+                this.generateInterface();
+            }
+            else if (param == 'C') {
+                this.generateClient();
+            }
+        }
+        
         this.LogMessage('API client generated successfully');
+    };
+
+    Generator.prototype.generateInterface = function () {
+        if (this.initialized !== true)
+            this.initialize();
+
+        // generate main API client interface
+        this.LogMessage('Rendering interface template for API');
+        var result = this.renderLintAndBeautify(this.templates.interface, this.viewModel, this.templates);
+
+        var outfile = this._outputPath + "/" + "index.interface.ts";
+        this.LogMessage('Creating output file for interface', outfile);
+        fs.writeFileSync(outfile, result, 'utf-8')
     };
 
     Generator.prototype.generateClient = function () {
@@ -126,6 +162,8 @@ var Generator = (function () {
         var swagger = this.swaggerParsed;
         var authorizedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
         var data = {
+            className: this._className,
+            interfaceName: "I" + this._className,
             isNode: false,
             description: (swagger.info && swagger.info.description) ? swagger.info.description : '',
             isSecure: swagger.securityDefinitions !== undefined,
