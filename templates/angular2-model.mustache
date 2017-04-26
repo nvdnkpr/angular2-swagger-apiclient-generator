@@ -1,6 +1,9 @@
-{{#refs}}
+{{#refImports}}
 import { {{type}} } from "./{{type}}"
-{{/refs}}
+{{/refImports}}
+{{#enums}}
+import { {{type}} } from "../enums/{{type}}"
+{{/enums}}
 
 export class {{&name}} {
 {{#propertyArray}}
@@ -13,10 +16,18 @@ export class {{&name}} {
 {{/propertyArray}}
 {{#refs}}
 	{{#isArray}}
-    public {{name}}: {{typescriptType}}<any>;
+    public {{name}}{{^required}}?{{/required}}: Array<{{typescriptType}}>;
 	{{/isArray}}
 	{{^isArray}}
-    public {{name}}: {{typescriptType}};
+    public {{name}}{{^required}}?{{/required}}: {{typescriptType}};
 	{{/isArray}}
 {{/refs}}
+{{#enums}}
+	{{#isArray}}
+    public {{name}}{{^required}}?{{/required}}: Array<{{typescriptType}}>;
+	{{/isArray}}
+	{{^isArray}}
+    public {{name}}{{^required}}?{{/required}}: {{typescriptType}};
+	{{/isArray}}
+{{/enums}}
 }

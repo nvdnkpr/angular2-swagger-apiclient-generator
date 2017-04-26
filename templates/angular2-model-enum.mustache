@@ -1,0 +1,4 @@
+export type {{ name }} =
+{{#enumParameters}}
+    "{{name}}"{{^last}} |{{/last}}{{#last}};{{/last}}
+{{/enumParameters}}
