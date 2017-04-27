@@ -88,8 +88,8 @@ export class ApiClientService {
         headers.append('{{&name}}', '{{&singleton}}');
                 {{/isSingleton}}
                 {{^isSingleton}}
-        if ({{&camelCaseName}} !== undefined) {
-            headers.append('{{&name}}', {{&camelCaseName}});
+        if ({{&name}} !== undefined) {
+            headers.append('{{&name}}', {{&name}});
         }
                 {{/isSingleton}}
             {{/isHeaderParameter}}
