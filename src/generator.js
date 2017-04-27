@@ -26,6 +26,7 @@ var Generator = (function () {
 
         this.templates = {
             'enum': fs.readFileSync(__dirname + "/../templates/angular2-model-enum.mustache", 'utf-8'),
+            'enum_helper': fs.readFileSync(__dirname + "/../templates/angular2-model-enum-helper.mustache", 'utf-8'),
             'class': fs.readFileSync(__dirname + "/../templates/angular2-service.mustache", 'utf-8'),
             'model': fs.readFileSync(__dirname + "/../templates/angular2-model.mustache", 'utf-8'),
             'models_export': fs.readFileSync(__dirname + "/../templates/angular2-models-export.mustache", 'utf-8')
@@ -171,6 +172,7 @@ var Generator = (function () {
     Generator.prototype.generateEnums = function () {
         var that = this,
             swaggerDefinitions = this.swaggerParsed.definitions,
+            enumPresent = false,
             i;
 
         if (this.initialized !== true)
@@ -197,6 +199,8 @@ var Generator = (function () {
                     var parameter = definition.properties[key];
 
                     if (parameter.enum) {
+                        enumPresent = true;
+
                         var enumParameters = [];
 
                         that.LogMessage("Enum found! " + key + " ", parameter.enum);
@@ -219,8 +223,8 @@ var Generator = (function () {
                             if (parameter.enum.hasOwnProperty(enumKey)) {
                                 var workingEnumVal = {};
                                 var name = parameter.enum[enumKey];
-                                name = that.capitalize(name);
-                                name = that.camelCase(name);
+                                // name = that.capitalize(name);
+                                // name = that.camelCase(name);
 
                                 workingEnumVal.name = name;
 
@@ -243,10 +247,19 @@ var Generator = (function () {
                         fs.writeFileSync(outfile, result, 'utf-8')
                     }
                 }
-
-
             }
         });
+
+        if (enumPresent) {
+            // Output enum helper
+            that.LogMessage('Rendering helper for enums');
+            var result = that.renderLintAndBeautify(that.templates.enum_helper);
+
+            var outfile = outputdir + "/EnumHelper.ts";
+
+            that.LogMessage('Creating output file', outfile);
+            fs.writeFileSync(outfile, result, 'utf-8')
+        }
     };
 
     Generator.prototype.generateCommonModelsExportDefinition = function () {
@@ -333,7 +346,6 @@ var Generator = (function () {
                     summaryLines = op.description.split('\n');
                     summaryLines.splice(summaryLines.length - 1, 1);
                 }
-
 
 
                 var method = {
