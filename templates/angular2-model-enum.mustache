@@ -4,9 +4,6 @@ export type {{ name }} =
 {{/enumParameters}}
 
 
-name.prototype.getValidProperties = function(): string[] {
-
-    return [{{#enumParameters}}
+{{name}}Properties[{{#enumParameters}}
         "{{name}}"{{^last}},{{/last}}{{/enumParameters}}
     ];
-}
