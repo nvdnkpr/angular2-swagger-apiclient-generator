@@ -4,6 +4,6 @@ export type {{ name }} =
 {{/enumParameters}}
 
 
-{{name}}Properties[{{#enumParameters}}
+export const {{name}}Properties = [{{#enumParameters}}
         "{{name}}"{{^last}},{{/last}}{{/enumParameters}}
     ];
