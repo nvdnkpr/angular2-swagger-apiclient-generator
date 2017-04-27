@@ -77,8 +77,8 @@ export class ApiClientService {
         });
                     {{/isPatternType}}
 			        {{^isPatternType}}
-        if ({{&camelCaseName}} !== undefined) {
-            queryParameters.set('{{&name}}', {{&camelCaseName}});
+        if ({{&name}} !== undefined) {
+            queryParameters.set('{{&name}}', {{&name}});
         }
                     {{/isPatternType}}
                 {{/isSingleton}}
@@ -98,8 +98,8 @@ export class ApiClientService {
         form['{{&name}}'] = '{{&singleton}}';
                 {{/isSingleton}}
                 {{^isSingleton}}
-        if ({{&camelCaseName}} !== undefined) {
-            form['{{&name}}'] = {{&camelCaseName}};
+        if ({{&name}} !== undefined) {
+            form['{{&name}}'] = {{&name}};
         }
                 {{/isSingleton}}
             {{/isFormParameter}}
