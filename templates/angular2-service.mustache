@@ -54,7 +54,7 @@ export class ApiClientService {
      {{/parameters}}
      * @return {Observable<any>}
      */
-    public {{&methodName}}({{#parameters}}{{&camelCaseName}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}): Observable<any> {
+    public {{&methodName}}({{#parameters}}{{&name}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}): Observable<any> {
         let queryParameters: any = new URLSearchParams();
         let headers: any = new Headers();
         headers.append('Content-Type', 'application/json');
