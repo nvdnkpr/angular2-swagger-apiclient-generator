@@ -1,11 +1,12 @@
-import { strToEnum } from "./EnumHelper"
-
-// Create KV constant for this type
-const {{name}}Constant = strToEnum([
-    {{#enumParameters}}
-    "{{name}}"{{^last}},{{/last}}
-    {{/enumParameters}}
-]);
+export type {{ name }} =
+{{#enumParameters}}
+    "{{name}}"{{^last}} |{{/last}}{{#last}};{{/last}}
+{{/enumParameters}}
 
 
-export type {{ name }} = keyof typeof {{name}}Constant;
+name.prototype.getValidProperties = function(): string[] {
+
+    return [{{#enumParameters}}
+        "{{name}}"{{^last}},{{/last}}{{/enumParameters}}
+    ];
+}
