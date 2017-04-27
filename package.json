@@ -32,8 +32,7 @@
   "scripts": {
     "a2apigen": "a2apigen -s swagger.json",
     "build": "gulp",
-    "prepublish": "npm run build",
-    "preinstall": "npm run build"
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "gulp": "^3.9.1",
