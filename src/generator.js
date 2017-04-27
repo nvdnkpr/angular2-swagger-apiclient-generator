@@ -21,9 +21,6 @@ var Generator = (function () {
 
         this.LogMessage('Parsing Swagger JSON');
         this.swaggerParsed = JSON.parse(swaggerfilecontent);
-        this.LogMessage(this.swaggerParsed);
-        this.LogMessage(">> ", this.swaggerParsed.definitions.MPPCustomer);
-        this.LogMessage(">> ", this.swaggerParsed.definitions.MPPCustomer.properties);
 
         this.LogMessage('Reading Mustache templates');
 
@@ -91,7 +88,6 @@ var Generator = (function () {
             definition.name = that.camelCase(defName);
 
             that.LogMessage('Rendering template for model: ', definition.name);
-            that.LogMessage("{");
 
             for (var key in definition.properties) {
                 if (definition.properties.hasOwnProperty(key)) {
@@ -117,10 +113,6 @@ var Generator = (function () {
                     } else if (_.has(parameter, 'enum')) {
                         parameter.isEnum = true;
                     }
-
-                    that.LogMessage('   Creating parameter ' + parameter.name + ': ', parameter.type);
-                    that.LogMessage('   Ref is: ', parameter['$ref']);
-
 
                     // Create refs for arrays, generated classes, and enums
                     if (parameter.isArray && _.has(parameter.items, '$ref')) {
@@ -166,15 +158,12 @@ var Generator = (function () {
             });
             definition.enums = enums;
 
-            that.LogMessage("");
-            that.LogMessage("   definition: ", definition);
 
             var result = that.renderLintAndBeautify(that.templates.model, definition, that.templates);
 
             var outfile = outputdir + "/" + definition.name + ".ts";
 
-            that.LogMessage('   Creating output file', outfile);
-            that.LogMessage('}', outfile);
+            that.LogMessage('Creating output file', outfile);
             fs.writeFileSync(outfile, result, 'utf-8')
         });
     };
@@ -201,8 +190,7 @@ var Generator = (function () {
 
             definition.name = that.camelCase(defName);
 
-            that.LogMessage('Rendering template for model: ', definition.name);
-            that.LogMessage("{");
+            that.LogMessage('Searching for Enums in: ', definition.name);
 
             for (var key in definition.properties) {
                 if (definition.properties.hasOwnProperty(key)) {
@@ -211,17 +199,13 @@ var Generator = (function () {
                     if (parameter.enum) {
                         var enumParameters = [];
 
-                        that.LogMessage("Enum found! > " + key + " ", parameter.enum);
+                        that.LogMessage("Enum found! " + key + " ", parameter.enum);
 
                         var enumName = that.camelCase(key);
-                        that.LogMessage("enumSubName camelCase! > ", enumName);
-
                         enumName = that.capitalize(enumName);
-                        that.LogMessage("enumSubName capitalize! > ", enumName);
-
                         parameter.name = definition.name + enumName;
 
-                        that.LogMessage("Enum Name! > ", parameter.name);
+                        that.LogMessage("Enum Name: ", parameter.name);
 
                         // add required info to property
                         if (definition.required && definition.required.indexOf(key) > -1) {
@@ -249,17 +233,13 @@ var Generator = (function () {
                         }
                         parameter.enumParameters = enumParameters;
 
-                        //TODO Use in model generation
-                        parameter.typescriptType = definition.name + that.camelCase(parameter.name);
-
-
                         // Output enum
+                        that.LogMessage('Rendering template for enum: ', parameter.name);
                         var result = that.renderLintAndBeautify(that.templates.enum, parameter, that.templates);
 
                         var outfile = outputdir + "/" + parameter.name + ".ts";
 
-                        that.LogMessage('   Creating output file', outfile);
-                        that.LogMessage('}', outfile);
+                        that.LogMessage('Creating output file', outfile);
                         fs.writeFileSync(outfile, result, 'utf-8')
                     }
                 }
@@ -353,6 +333,7 @@ var Generator = (function () {
                     summaryLines = op.description.split('\n');
                     summaryLines.splice(summaryLines.length - 1, 1);
                 }
+
 
 
                 var method = {
@@ -577,7 +558,6 @@ var Generator = (function () {
             return text;
 
         var tokens = [];
-
         text.split('-').forEach(function (token, index) {
             tokens.push(Generator.prototype.capitalize(token));
         });
