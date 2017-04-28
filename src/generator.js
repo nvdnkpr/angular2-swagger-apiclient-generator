@@ -26,7 +26,6 @@ var Generator = (function () {
 
         this.templates = {
             'enum': fs.readFileSync(__dirname + "/../templates/angular2-model-enum.mustache", 'utf-8'),
-            'enum_helper': fs.readFileSync(__dirname + "/../templates/angular2-model-enum-helper.mustache", 'utf-8'),
             'class': fs.readFileSync(__dirname + "/../templates/angular2-service.mustache", 'utf-8'),
             'model': fs.readFileSync(__dirname + "/../templates/angular2-model.mustache", 'utf-8'),
             'models_export': fs.readFileSync(__dirname + "/../templates/angular2-models-export.mustache", 'utf-8')
@@ -249,17 +248,6 @@ var Generator = (function () {
                 }
             }
         });
-
-        if (enumPresent) {
-            // Output enum helper
-            that.LogMessage('Rendering helper for enums');
-            var result = that.renderLintAndBeautify(that.templates.enum_helper);
-
-            var outfile = outputdir + "/EnumHelper.ts";
-
-            that.LogMessage('Creating output file', outfile);
-            fs.writeFileSync(outfile, result, 'utf-8')
-        }
     };
 
     Generator.prototype.generateCommonModelsExportDefinition = function () {
