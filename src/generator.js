@@ -343,6 +343,7 @@ var Generator = (function () {
                     method: m.toUpperCase(),
                     angular2httpMethod: m.toLowerCase(),
                     isGET: m.toUpperCase() === 'GET',
+                    isNotGET: m.toUpperCase() !== 'GET',
                     hasPayload: !_.includes(['GET', 'DELETE', 'HEAD'], m.toUpperCase()),
                     hasEmptyPayload: false,
                     summaryLines: summaryLines,
@@ -380,6 +381,21 @@ var Generator = (function () {
                     method.hasPayload = false;
                     // include empty payload
                     method.hasEmptyPayload = true;
+                } else {
+                    // Check if all the parameters are path params and update the payload params to cover that.
+                    var onlyPath = true;
+                    for (i = 0; i < params.length; i += 1) {
+                        if (params[i].in !== 'path') {
+                            onlyPath = false;
+                            break;
+                        }
+                    }
+
+                    if (onlyPath) {
+                        method.hasPayload = false;
+                        // include empty payload
+                        method.hasEmptyPayload = true;
+                    }
                 }
 
                 _.forEach(params, function (parameter) {
