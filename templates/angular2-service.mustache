@@ -15,6 +15,8 @@ import { Observable } from 'rxjs/Observable';
 export class ApiClientService {
     public domain: string;
     private token: string = null;
+    private globalHeaders: Map<string,string> = new Map();
+
 
     constructor(public http: Http) {
     {{#domain}}
@@ -39,7 +41,38 @@ export class ApiClientService {
      */
     public getToken(): string {
         return this.token;
-    }    
+    }
+
+    /**
+     * Add a header that will be attached to all requests that are made.
+     *
+     * @param name The name of the header; e.g. `Content-Type`
+     * @param value The value of the header; e.g. in the case above
+     * it could be `application/json`
+     */
+    public addGlobalHeader(name: string, value: string) {
+        this.globalHeaders.set(name, value);
+    }
+
+    /**
+     * Removes a named header from the global list.
+     *
+     * @param name The name of the parameters that will be removed from
+     * the headers list
+     */
+    public removeGlobalHeader(name: string) {
+        this.globalHeaders.delete(name);
+    }
+
+    /**
+     * Get the map of header values that are currently being sent with
+     * every request.
+     *
+     * @returns {Map<string, string>} The map of header name to value
+     */
+    public getGlobalHeadersMap(): Map<string, string> {
+        return this.globalHeaders;
+    }
 
 {{#methods}}
 
@@ -57,6 +90,12 @@ export class ApiClientService {
     public {{&methodName}}({{#parameters}}{{&name}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}): Observable<any> {
         let queryParameters: any = new URLSearchParams();
         let headers: any = new Headers();
+
+        // append global headers first, in case they need overriding
+        this.globalHeaders.forEach((name: string, value: string) => {
+            headers.append(name, value);
+        });
+
         headers.append('Content-Type', 'application/json');
 
         // append auth token if set
