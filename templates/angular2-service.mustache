@@ -92,7 +92,7 @@ export class ApiClientService {
         let headers: any = new Headers();
 
         // append global headers first, in case they need overriding
-        this.globalHeaders.forEach((name: string, value: string) => {
+        this.globalHeaders.forEach((value: string, name: string) => {
             headers.append(name, value);
         });
 
