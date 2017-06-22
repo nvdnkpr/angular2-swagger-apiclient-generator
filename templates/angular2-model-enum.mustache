@@ -1,0 +1,32 @@
+export type {{name}} =
+{{#enumParameters}}
+    "{{name}}"{{^last}} |{{/last}}{{#last}};{{/last}}
+{{/enumParameters}}
+
+
+export class {{name}}Helper {
+    private constructor() {
+    }
+
+    public static getTypeFromString(str: string): {{name}} {
+        let returnValue: {{name}};
+        switch (str) {
+            {{#enumParameters}}
+            case "{{name}}": {
+                returnValue = "{{name}}";
+                break;
+            }
+            {{/enumParameters}}
+            default: {
+                throw new TypeError(str + " is not a valid value of {{name}}.");
+            }
+        }
+        return returnValue;
+    }
+
+    public static getValuesArray(): string[] {
+        return [{{#enumParameters}}
+            "{{name}}"{{^last}},{{/last}}{{/enumParameters}}
+        ];
+    }
+}
