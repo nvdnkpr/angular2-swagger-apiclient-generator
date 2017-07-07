@@ -1,6 +1,6 @@
 {
   "name": "swagger2ng2",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Angular 2 API client generator from swagger JSON and YAML.",
   "homepage": "https://github.com/syron/angular2-swagger-client-generator",
   "main": "index.js",
