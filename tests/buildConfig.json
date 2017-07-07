@@ -1,0 +1,11 @@
+{
+    "source": "tests\\apis\\swagger_yaml.yaml",
+    "outputPath": ".\\output",
+    "className": null,
+    "generate": null,
+    "modelInterfaces": null,
+    "fileName": null,
+    "modelPath": null,
+    "createModelPath": true,
+    "createModelExportFile": true
+}

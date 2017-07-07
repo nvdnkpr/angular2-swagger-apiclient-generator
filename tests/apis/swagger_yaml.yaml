@@ -1,0 +1,58 @@
+swagger: "2.0"
+info:
+  version: "2.0"
+  title: WIS API - Events
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /events:
+    get:
+      description: Gets events.
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  Event:
+    required:
+      - Id
+      - Subject
+      - Modified
+    properties:
+      Id:
+        type: number
+      Subject:
+        type: string
+      Modified:
+        type: string
+        format: date-time
+  Error:
+    required:
+      - message
+      - code
+    properties:
+      message:
+        type: string
+      code:
+        type: integer

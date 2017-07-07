@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, URLSearchParams, Headers } from '@angular/http';
 import { {{#definitions}}{{name}}{{^last}}, {{/last}}{{/definitions}} } from './models';
 import { Observable } from 'rxjs';
-
+import { {{interfaceName }}} from './index.interface';
 
 @Injectable()
 /**
  * Created with angular2-swagger-client-generator v{{&version}}
  */
-export class ApiClientService {
+export class {{className}} implements {{interfaceName}} {
 	domain:string;
 
   constructor(public http: Http){
