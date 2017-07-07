@@ -197,6 +197,15 @@ var Generator = (function () {
             modelPath: this._modelPath,
             createModelPath: this._createModelPath
         };
+        
+        // Simple function to camelize poorly written operationId's.
+        var camelize = function (string) { 
+            string = string.replace (/(?:^|(\W|_)+)(\w)/g, function (match, p1, p2) {
+                return p2 ? p2.toUpperCase () : '';
+            });
+
+            return string.charAt(0).toLowerCase() + string.slice(1);
+        }
 
         _.forEach(swagger.paths, function (api, path) {
             var globalParams = [];
@@ -226,7 +235,7 @@ var Generator = (function () {
                 var method = {
                     path: path,
                     backTickPath: path.replace(/(\{.*?\})/g, "$$$1"),
-                    methodName: op['x-swagger-js-method-name'] ? op['x-swagger-js-method-name'] : (op.operationId ? op.operationId : that.getPathToMethodName(m, path)),
+                    methodName: op['x-swagger-js-method-name'] ? op['x-swagger-js-method-name'] : (op.operationId ? camelize(op.operationId) : that.getPathToMethodName(m, path)),
                     method: m.toUpperCase(),
                     angular2httpMethod: m.toLowerCase(),
                     isGET: m.toUpperCase() === 'GET',
