@@ -1,22 +1,19 @@
 {
-  "name": "swagger2ng2",
-  "version": "0.0.31",
-  "description": "Angular 2 API client generator from swagger JSON and YAML.",
-  "homepage": "https://github.com/syron/angular2-swagger-client-generator",
+  "name": "angular2-swagger-client-generator",
+  "version": "0.0.15",
+  "description": "Angular 2 API client generator from swagger json",
+  "homepage": "https://github.com/nvdnkpr/angular2-swagger-client-generator",
   "main": "index.js",
-  "bin": {
-    "swagger2ng2": "./bin/a2apigen.js"
-  },
   "author": {
-    "name": "Robert Mayer",
-    "email": "rwlmayer@gmail.com"
+    "name": "Navid Nikpour",
+    "email": "navid@nikpour.com"
   },
   "bugs": {
-    "url": "https://github.com/syron/angular2-swagger-client-generator/issues"
+    "url": "https://github.com/nvdnkpr/angular2-swagger-client-generator/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/syron/angular2-swagger-client-generator.git"
+    "url": "git://github.com/nvdnkpr/angular2-swagger-client-generator.git"
   },
   "keywords": [
     "swagger",
@@ -30,22 +27,28 @@
   ],
   "license": "APACHE",
   "scripts": {
-    "swagger2ng2": "swagger2ng2 -s swagger.json",
+    "swagger2angular": "ts-node ./src/bin/swagger2angular",
     "build": "gulp"
   },
   "dependencies": {
-    "gulp": "^3.9.1",
-    "js-beautify": "^1.5.10",
+    "handlebars": "^4.0.10",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
-    "mustache": "^2.2.0",
     "optimist": "^0.6.1",
-    "request": "^2.67.0",
-    "tslint": "^3.1.1",
-    "typescript": "^1.7.3",
-    "js-yaml": "^3.8.1"
+    "swagger-parser": "^3.4.1",
+    "typescript-formatter": "^5.2.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "@types/handlebars": "^4.0.33",
+    "@types/js-beautify": "0.0.30",
+    "@types/lodash": "^4.14.68",
+    "@types/node": "^8.0.8",
+    "@types/swagger-parser": "^4.0.1",
+    "@types/swagger-schema-official": "^2.0.5",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.1",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.1"
   }
 }
