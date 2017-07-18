@@ -5,8 +5,11 @@ node_modules
 .vscode
 .idea
 bin
+!src/bin
 obj
 output
 temp
 lib
+client
+dist
 npm-debug.log
