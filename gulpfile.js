@@ -1,14 +1,17 @@
-var gulp = require('gulp');
+const gulp = require('gulp');
+const ts = require('gulp-typescript');
+const del = require('del');
 
-gulp.task('default', ['copyBin','copyLib']);
+gulp.task('default', ['clean', 'copyTemplates','copyLib']);
 
-gulp.task('copyBin',function(){
-  var stream = gulp.src('src/a2apigen.js').pipe(gulp.dest('bin'));
-  return stream;
+gulp.task('clean', function(){
+  return del(['dist']);
+});
+gulp.task('copyTemplates',['clean'], function(){
+  return gulp.src('src/**/*.hbs').pipe(gulp.dest('dist'));
 });
 
-gulp.task('copyLib',function(){
-  var stream = gulp.src('src/generator.js').pipe(gulp.dest('lib'));
-  return stream;
+gulp.task('copyLib',['clean'], function(){
+  return gulp.src('src/**/*.ts').pipe(ts({project: 'tsconfig.json'})).pipe(gulp.dest('dist'));
 });
 

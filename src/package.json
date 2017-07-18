@@ -1,0 +1,48 @@
+{
+  "name": "angular2-swagger-client-generator",
+  "version": "0.0.15",
+  "description": "Angular 2 API client generator from swagger json",
+  "homepage": "https://github.com/nvdnkpr/angular2-swagger-client-generator",
+  "main": "index.js",
+  "bin": {
+    "swagger2angular": "./bin/swagger2angular.js"
+  },
+  "author": {
+    "name": "Navid Nikpour",
+    "email": "navid@nikpour.com"
+  },
+  "bugs": {
+    "url": "https://github.com/nvdnkpr/angular2-swagger-client-generator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nvdnkpr/angular2-swagger-client-generator.git"
+  },
+  "keywords": [
+    "swagger",
+    "rest",
+    "angular2",
+    "angular",
+    "scaffolding",
+    "webapi",
+    "api",
+    "generator"
+  ],
+  "license": "APACHE",
+  "scripts": {
+    "swagger2angular": "swagger2angular"
+  },
+  "dependencies": {
+    "handlebars": "^4.0.10",
+    "js-beautify": "^1.6.14",
+    "js-yaml": "^3.8.1",
+    "lodash": "^3.10.1",
+    "mkdirp": "^0.5.1",
+    "optimist": "^0.6.1",
+    "request": "^2.67.0",
+    "swagger-parser": "^3.4.1",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.1",
+    "typescript-formatter": "^5.2.0"
+  }
+}
