@@ -146,7 +146,7 @@ export class ApiClientService {
         let uri: string = `{{&backTickPath}}`;
 
         return this.http
-            .{{angular2httpMethod}}(this.domain + uri{{#isNotGET}}{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}, undefined{{/hasEmptyPayload}}{{/isNotGET}}, { headers: headers, search: queryParameters })
+        .{{angular2httpMethod}}(this.domain + uri{{#isNotDELETE}}{{#isNotGET}}{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}, undefined{{/hasEmptyPayload}}{{/isNotGET}}{{/isNotDELETE}}, { headers: headers{{#isDELETE}}, body: {{#hasPayload}}JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}undefined{{/hasEmptyPayload}}{{/isDELETE}}, search: queryParameters })
             .map((res: Response) => {
                 return res;
             });
