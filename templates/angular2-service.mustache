@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, URLSearchParams } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import {
     {{#definitions}}
     {{name}}{{^last}},{{/last}}
@@ -18,7 +18,7 @@ export class ApiClientService {
     private globalHeaders: Map<string,string> = new Map();
 
 
-    constructor(public http: Http) {
+    constructor(public http: HttpClient) {
     {{#domain}}
         this.domain = '{{&.}}';
     {{/domain}}
@@ -80,55 +80,55 @@ export class ApiClientService {
      {{#summaryLines}}
      * {{&.}}
      {{/summaryLines}}
-     * @method
+     * @method {{angular2httpMethod}}
      * @name {{&methodName}}
      {{#parameters}}
      {{^isSingleton}}* @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
      {{/parameters}}
-     * @return {Observable<any>}
+     * @return {Observable<HttpResponse<Object>>}
      */
     public {{&methodName}}({{#parameters}}{{&name}}: {{typescriptType}}{{^last}}, {{/last}}{{/parameters}}): Observable<any> {
-        let queryParameters: any = new URLSearchParams();
-        let headers: any = new Headers();
+        let params: any = new HttpParams();
+        let headers: any = new HttpHeaders();
 
         // append global headers first, in case they need overriding
         this.globalHeaders.forEach((value: string, name: string) => {
-            headers.append(name, value);
+            headers = headers.append(name, value);
         });
 
-        headers.append('Content-Type', 'application/json');
+        headers = headers.append('Content-Type', 'application/json');
 
         // append auth token if set
-        if (this.token !== null) {
-            headers.append('Authorization', this.token);
+        if (this.token) {
+            headers = headers.append('Authorization', this.token);
         }
 {{#parameters}}
 			{{#isQueryParameter}}
                 {{#isSingleton}}
-        queryParameters.set('{{&name}}', {{&singleton}});
+        params = params.set('{{&name}}', {{&singleton}});
                 {{/isSingleton}}
 			    {{^isSingleton}}
 			        {{#isPatternType}}
         Object.keys(parameters).forEach(function(parameterName) {
             if (new RegExp('{{&pattern}}').test(parameterName)) {
-                queryParameters.set(parameterName, parameters[parameterName]);
+                params = params.set(parameterName, parameters[parameterName]);
             }
         });
                     {{/isPatternType}}
 			        {{^isPatternType}}
-        if ({{&name}} !== undefined) {
-            queryParameters.set('{{&name}}', {{&name}});
+        if ({{&name}}) {
+            params = params.set('{{&name}}', {{&name}});
         }
                     {{/isPatternType}}
                 {{/isSingleton}}
             {{/isQueryParameter}}
 			{{#isHeaderParameter}}
                 {{#isSingleton}}
-        headers.append('{{&name}}', '{{&singleton}}');
+        headers = headers.append('{{&name}}', '{{&singleton}}');
                 {{/isSingleton}}
                 {{^isSingleton}}
-        if ({{&name}} !== undefined) {
-            headers.append('{{&name}}', {{&name}});
+        if ({{&name}}) {
+            headers = headers.append('{{&name}}', {{&name}});
         }
                 {{/isSingleton}}
             {{/isHeaderParameter}}
@@ -146,10 +146,19 @@ export class ApiClientService {
         let uri: string = `{{&backTickPath}}`;
 
         return this.http
-        .{{angular2httpMethod}}(this.domain + uri{{#isNotDELETE}}{{#isNotGET}}{{#hasPayload}}, JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}, undefined{{/hasEmptyPayload}}{{/isNotGET}}{{/isNotDELETE}}, { headers: headers{{#isDELETE}}, body: {{#hasPayload}}JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}undefined{{/hasEmptyPayload}}{{/isDELETE}}, search: queryParameters })
-            .map((res: Response) => {
-                return res;
-            });
+        .request(
+            '{{angular2httpMethod}}',
+            this.domain + uri,
+            {
+                headers: headers,
+                {{#isNotGET}}
+                body: {{#hasPayload}}JSON.stringify({{#parameters}}{{#isBodyParameter}}{{&camelCaseName}}{{/isBodyParameter}}{{/parameters}}){{/hasPayload}}{{#hasEmptyPayload}}undefined{{/hasEmptyPayload}},
+                {{/isNotGET}}
+                params: params
+            })
+        .map((res: HttpResponse<Object>) => {
+            return res;
+        });
     }
 {{/methods}}
 }
